@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+
+    <!-- 导航栏 -->
+    <nav th:fragment="header" class="navbar sticky-top navbar-expand-lg navbar-light"
+         style="background-color: #ffffff;box-shadow: 0px -2px 10px #d0cccc;">
+        <div class="container">
+            <!--标题-->
+            <a class="navbar-brand">
+                交流社区
+            </a>
+
+            <!--小屏幕下拉响应-->
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample07"
+                    aria-controls="navbarsExample07" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- 导航  -->
+            <div class="collapse navbar-collapse" id="navbarsExample07">
+                <ul class="navbar-nav mr-auto">
+                    <li th:class="${activeUrl=='index.html'?'nav-item active':'nav-item'}">
+                        <a class="nav-link" th:href="@{/index}">首页 </a>
+                    </li>
+                    <li th:class="${activeUrl=='find'?'nav-item active':'nav-item'}">
+                        <a class="nav-link" th:href="@{/find}">看点 </a>
+                    </li>
+                    <li th:class="${activeUrl=='question'?'nav-item active':'nav-item'}">
+                        <a class="nav-link" th:href="@{/question}">发帖 </a>
+                    </li>
+                    <!--  <li th:class="${activeUrl=='blog'?'nav-item active':'nav-item'}">
+                          <a class="nav-link" th:href="@{/blog}">笔记</a>
+                      </li>
+                      <li th:class="${activeUrl=='download'?'nav-item active':'nav-item'}">
+                          <a class="nav-link" th:href="@{/download}">资源库 </a>
+                      </li>-->
+                    <li th:class="${activeUrl=='say'?'nav-item active':'nav-item'}">
+                        <a class="nav-link" th:href="@{/say}">公告 </a>
+                    </li>
+
+                </ul>
+
+                <!-- <form class="navbar-form navbar-left" style="padding-bottom: 0px;height: 35px;width: 300px" role="search">
+                     <div class="form-group">
+                         <input type="text" style="float: left;width: 200px" class="form-control" placeholder="Search">
+
+                     </div>
+                    <button type="submit" style="float: right;margin:0 auto;padding-top: 0px;padding-left: 15px" class="btn btn-default">Submit</button>
+                 </form>-->
+               <!-- <span th:if="${activeUrl=='find'}">-->
+                <form style="width: 300px" class="navbar-form navbar-left" th:if="${activeUrl=='find'}">
+                    <div class="form-group" style="padding-right: 0px">
+                        <input type="text" style="width: 203px;padding-right: 0px;margin-right: 0px;float: left" class="form-control" placeholder="搜索.  .  .">
+                        <button type="submit" style="float: right;padding-left: 15px;margin-right: 30px" class="btn btn-default">搜索</button>
+                    </div>
+
+                </form>
+<!--                </span>-->
+                <!--
+                <button type="submit" style="float: right;margin-top: 0px;padding-top: 0px" class="btn btn-default">Submit</button>-->
+
+                <!--如果未登录-->
+                <div sec:authorize="!isAuthenticated()">
+                    <a class="btn btn-sm btn-primary" th:href="@{/toLogin}" role="button">
+                        <svg class="bi bi-person-fill" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        </svg>
+                        登录
+                    </a>
+                </div>
+
+                <!--如果已登录-->
+                <div id="flag" sec:authorize="isAuthenticated()">
+               <span th:if="${session.loginUser==null}">
+
+               </span>
+
+                    <ul class="navbar-nav mr-auto" th:if="${session.loginUser!=null}">
+                        <li class="nav-item dropdown">
+                            <a style="color: rgba(0,0,0,.5);text-decoration: none" class="nav-link dropdown-toggle"
+                               href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+                               aria-expanded="false">
+                                <img th:src="${session.loginUser.getAvatar()}"
+                                     style="width: 30px;height:30px;border-radius: 50%;" alt="">
+                                <span sec:authentication="name"></span>
+                                <!--<span th:text="${session.SPRING_SECURITY_CONTEXT.authentication.principal.username}"></span>-->
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" th:href="@{'/user/'+${session.loginUser.getUid()}}">个人中心</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" th:href="@{/logout}">注销</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <aside class="col-md-3 blog-sidebar" th:fragment="userShowPanel">
+
+        <div class="p-4 my-3 bg-white rounded">
+            <div class="mb-0">
+                <p class="text-center">
+                    <img th:src="${session.loginUser.getAvatar()}" style="border-radius: 50%" width="128" height="128">
+                </p>
+                <div class="text-center">
+                    <span th:text="${session.loginUser.getUsername()}"></span>
+                    <br>
+                    <small>
+                        <!--<span class="badge badge-primary">普通用户</span>-->
+                        <span
+                                th:class="${session.loginUser.getRoleId()==2?'badge badge-warning':'badge badge-success'}"
+                                th:text="${session.loginUser.getRoleId()==2?'Vip会员':'普通用户'}">
+                            </span>
+                    </small>
+                    <p class="text-center">
+                        <small th:text="${userInfo.getIntro()}"></small>
+                    </p>
+                    <p>
+                            <span th:each="hobby:${infoHobbys}"
+                                  th:text="${hobby}"
+                                  class="badge badge-light mr-1"></span>
+                    </p>
+
+                    <p>
+                    <table class="table">
+                        <thead id="table-title">
+                            <tr>
+                                <th scope="col">问题</th>
+                                <th scope="col">回复</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td th:text="${questionCount}">0</td>
+                                <td th:text="${commentCount}">0</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+
+</html>
